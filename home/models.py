@@ -124,3 +124,31 @@ class FAQ(models.Model):
     def __str__(self):
         return self.question
 
+from django.db import models
+
+class RepairRequest(models.Model):
+    BRAND_CHOICES = [
+        ('iphone', 'iPhone'),
+        ('samsung', 'Samsung'),
+        ('lg', 'LG'),
+        ('google', 'Google'),
+        ('motorola', 'Motorola'),
+        ('other', 'Other'),
+    ]
+
+    brand = models.CharField(max_length=50, choices=BRAND_CHOICES)
+    model = models.CharField(max_length=50)
+    problems = models.TextField()  # Storing problems as a comma-separated string
+    description = models.TextField(null=True, blank=True)
+    service_method = models.CharField(max_length=20)
+    store_location = models.CharField(max_length=100, null=True, blank=True)
+    preferred_date = models.CharField(max_length=100, null=True, blank=True)
+    preferred_time = models.CharField(max_length=20, null=True, blank=True)
+    contact_first_name = models.CharField(max_length=50)
+    contact_last_name = models.CharField(max_length=50)
+    contact_email = models.EmailField()
+    contact_phone = models.CharField(max_length=15)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.brand} {self.model} Repair - {self.contact_first_name} {self.contact_last_name}"

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import HeroSection,Accessory, NavbarItem, Logo, DropdownItem, RepairService, RepairCategory, GoogleReview
+from .models import HeroSection,Accessory, NavbarItem, Logo, DropdownItem, RepairService, RepairCategory, GoogleReview,RepairRequest
 # Register your models here
 
 class DropdownItemInline(admin.TabularInline):
@@ -12,7 +12,7 @@ class NavbarItemAdmin(admin.ModelAdmin):
 
 admin.site.register(HeroSection)
 admin.site.register(Accessory) 
-
+admin.site.register(RepairRequest)
 admin.site.register(Logo)
 admin.site.register(NavbarItem, NavbarItemAdmin)
 admin.site.register(RepairService)
