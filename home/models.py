@@ -1,5 +1,7 @@
 
 # home/models.py
+from django.utils.text import slugify
+
 from django.db import models
 
 class HeroSection(models.Model):
@@ -108,11 +110,17 @@ class Blog(models.Model):
     date = models.DateField()
     description = models.TextField()
     image = models.ImageField(upload_to='blogs/')
-    url = models.URLField(max_length=200)
-
+    
+    url = models.URLField(max_length=200, blank=True, null=True)  # If needed, keep external URL
+    slug = models.SlugField(null=True, blank=True)
+    
     def __str__(self):
         return self.title
-
+    def save(self, *args, **kwargs):
+        if not self.slug:  # Only set slug if it's not already set
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+  
 
 
 
@@ -152,3 +160,101 @@ class RepairRequest(models.Model):
 
     def __str__(self):
         return f"{self.brand} {self.model} Repair - {self.contact_first_name} {self.contact_last_name}"
+
+
+
+
+from django.db import models
+
+class SellDevice(models.Model):
+    DEVICE_TYPE_CHOICES = [
+        ('phone', 'Phone'),
+        ('tab', 'Tab'),
+        ('computer', 'Computer'),
+        ('console', 'Console'),
+        ('headset', 'Headset'),
+        ('something else', 'Something Else'),
+    ]
+    
+    type = models.CharField(max_length=50, choices=DEVICE_TYPE_CHOICES)
+    brand = models.CharField(max_length=50)
+    model = models.CharField(max_length=50)
+    description = models.TextField()
+    device_images = models.ImageField(upload_to='device_images/', null=True, blank=True)
+    customer_first_name = models.CharField(max_length=50)
+    customer_last_name = models.CharField(max_length=50)
+    customer_email = models.EmailField()
+    customer_phone = models.CharField(max_length=15)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.customer_first_name} {self.customer_last_name} - {self.type} {self.brand} {self.model}"
+
+
+
+
+
+from django.db import models
+
+class FranchiseApplication(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=15)
+    street_address = models.TextField()
+    about_applicant = models.TextField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.email}"
+
+
+
+from django.db import models
+
+class JobOpening(models.Model):
+    title = models.CharField(max_length=255)
+    department = models.CharField(max_length=255)
+    employment_type = models.CharField(max_length=50)  # Full Time, Part Time
+    location = models.CharField(max_length=100)  # Onsite, Remote
+    salary_range = models.CharField(max_length=50)  # E.g., "$2000 - $4500 USD/month"
+    description = models.TextField()
+    responsibilities = models.TextField()
+    requirements = models.TextField()
+
+    def __str__(self):
+        return self.title
+
+class JobApplication(models.Model):
+    job = models.ForeignKey(JobOpening, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=15)
+    message = models.TextField(blank=True, null=True)
+    resume = models.FileField(upload_to='resumes/')
+    applied_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.job.title}"
+
+
+
+
+from django.db import models
+from django.db.models import JSONField
+
+from decimal import Decimal
+
+class Order(models.Model):
+    customer_first_name = models.CharField(max_length=50)
+    customer_last_name = models.CharField(max_length=50)
+    customer_email = models.EmailField()
+    customer_phone = models.CharField(max_length=15)
+    customer_address = models.TextField()
+    items = JSONField()  # Store items in JSON format: [{"name": ..., "quantity": ..., "price": ...}, ...]
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order {self.id} by {self.customer_first_name} {self.customer_last_name}"

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import HeroSection,Accessory, NavbarItem, Logo, DropdownItem, RepairService, RepairCategory, GoogleReview,RepairRequest
+from .models import HeroSection,Accessory, NavbarItem, Logo, DropdownItem, RepairService, RepairCategory, GoogleReview,RepairRequest, SellDevice, FranchiseApplication, JobOpening, JobApplication, Order
 # Register your models here
 
 class DropdownItemInline(admin.TabularInline):
@@ -18,6 +18,11 @@ admin.site.register(NavbarItem, NavbarItemAdmin)
 admin.site.register(RepairService)
 admin.site.register(RepairCategory)
 admin.site.register(GoogleReview)
+admin.site.register(SellDevice)
+admin.site.register(FranchiseApplication)
+admin.site.register(JobOpening)
+admin.site.register(JobApplication)
+
 
 
 
@@ -30,3 +35,13 @@ class BlogAdmin(admin.ModelAdmin):
 @admin.register(FAQ)
 class FAQAdmin(admin.ModelAdmin):
     list_display = ('question',)
+
+
+
+from django.contrib import admin
+from .models import Order
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer_first_name', 'customer_last_name', 'total_price', 'created_at')
+    readonly_fields = ('items',)
