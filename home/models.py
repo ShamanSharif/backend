@@ -258,3 +258,4 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order {self.id} by {self.customer_first_name} {self.customer_last_name}"
+#comments added
