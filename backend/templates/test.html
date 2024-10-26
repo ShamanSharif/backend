@@ -1,0 +1,211 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    body {
+      padding-top: 50px;
+    }
+
+    .starter-template {
+      padding: 40px 15px;
+      text-align: center;
+    }
+
+
+    /* Preloader
+-------------------------------------------------------*/
+
+    .loader-mask {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #fff;
+      z-index: 99999;
+    }
+
+    .loader {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 0;
+      color: #00c9d0;
+      display: inline-block;
+      margin: -25px 0 0 -25px;
+      text-indent: -9999em;
+      -webkit-transform: translateZ(0);
+      -ms-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+
+    .lead {
+      font-size: 13px;
+    }
+
+    .loader div {
+      background-color: #d9b06a;
+      display: inline-block;
+      float: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50px;
+      height: 50px;
+      opacity: .5;
+      border-radius: 50%;
+      -webkit-animation: ballPulseDouble 2s ease-in-out infinite;
+      animation: ballPulseDouble 2s ease-in-out infinite;
+    }
+
+    .loader div:last-child {
+      -webkit-animation-delay: -1s;
+      animation-delay: -1s;
+    }
+
+    @-webkit-keyframes ballPulseDouble {
+
+      0%,
+      100% {
+        -webkit-transform: scale(0);
+        transform: scale(0);
+      }
+
+      50% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+      }
+    }
+
+    @keyframes ballPulseDouble {
+
+      0%,
+      100% {
+        -webkit-transform: scale(0);
+        transform: scale(0);
+      }
+
+      50% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Preloader -->
+  <div class="loader-mask">
+    <div class="loader">
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+  <!-- Preloader -->
+
+  <!-- Demo Content -->
+
+  <div class="container">
+    <div class="starter-template">
+      <h2>Hello,</h2>
+      <h2>Preloader with preloaded Page</h2>
+      <p class="lead">*Reload to check preloader. (preloader time automatically adjust according to page content,)</p>
+    </div>
+    <nav class="navbar navbar-inverse">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar"> <span
+              class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button> <a
+            class="navbar-brand" href="#">Portfolio</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Gallery</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="jumbotron">
+      <div class="container text-center">
+        <h1>My Portfolio</h1>
+        <p>Some text that represents "Me"...</p>
+      </div>
+    </div>
+    <div class="container-fluid bg-3 text-center">
+      <h3>Some of my Work</h3>
+      <br>
+      <div class="row">
+        <div class="col-sm-3">
+          <p>Some text..</p> <img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%"
+            alt="Image">
+        </div>
+        <div class="col-sm-3">
+          <p>Some text..</p> <img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%"
+            alt="Image">
+        </div>
+        <div class="col-sm-3">
+          <p>Some text..</p> <img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%"
+            alt="Image">
+        </div>
+        <div class="col-sm-3">
+          <p>Some text..</p> <img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%"
+            alt="Image">
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="container-fluid bg-3 text-center">
+      <div class="row">
+        <div class="col-sm-3">
+          <p>Some text..</p> <img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%"
+            alt="Image">
+        </div>
+        <div class="col-sm-3">
+          <p>Some text..</p> <img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%"
+            alt="Image">
+        </div>
+        <div class="col-sm-3">
+          <p>Some text..</p> <img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%"
+            alt="Image">
+        </div>
+        <div class="col-sm-3">
+          <p>Some text..</p> <img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%"
+            alt="Image">
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid bg-3 text-center" style="padding: 50px;">
+      <iframe width="854" height="480" src="https://www.youtube.com/embed/6jiNS_4CEug" frameborder="0"
+        allowfullscreen></iframe>
+    </div>
+    <br>
+    <br>
+    <footer class="container-fluid text-center">
+      <p>Footer Text</p>
+    </footer>
+
+    <script>
+      $(window).load(function () {
+        // Preloader
+        $('.loader').fadeOut();
+        $('.loader-mask').delay(350).fadeOut('slow');
+      });
+    </script>
+</body>
+
+</html>
