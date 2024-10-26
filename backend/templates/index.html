@@ -363,7 +363,7 @@
     <div class="container">
         <div class="d-flex flex-column align-items-center flex-md-row justify-content-between gap-2">
             <h1 class="section-title text-md-start">Get your <br class="d-none d-md-inline"> Favourite Accessories</h1>
-            <a href="./products.html" class="carousel-inner-btn m-0">View More Products →</i></a>
+            <a href="{% url 'products' %}" class="carousel-inner-btn m-0">View More Products →</i></a>
         </div>
 
         <div class="px-lg-5 py-4 my-4 rounded-3 accessoriesSliderWrapper">
@@ -398,7 +398,7 @@
             >
                 <!-- Loop through accessories dynamically -->
                 {% for accessory in accessories %}
-                    <a href="./productDetails.html"
+                    <a href="{% url 'products' %}"
                       class="card sliderCard rounded-3"
                       style="scroll-snap-align: start; background: var(--secondaryColor); color: inherit !important;"
                     >
