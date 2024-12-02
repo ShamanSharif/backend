@@ -262,10 +262,13 @@
         </div>
 
         <div class="d-flex gap-3 align-items-center">
-            {% comment %} <a href="{% url 'add_to_cart' accessory.id %}" class="btn text-white d-flex gap-2 align-items-center" style="background: var(--primaryColor);">
-                <i class="fa-solid fa-cart-plus" style="font-size: 1rem;"></i>
-                <b class="text-nowrap" style="font-size: 0.75rem;">Add to cart</b>
-            </a> {% endcomment %}
+            <form action="{% url 'add_to_cart' accessory.id %}" method="POST">
+                {% csrf_token %}
+                <label for="quantity">Quantity:</label>
+                <input type="number" name="quantity" id="quantity" value="1" min="1">
+                <button type="submit" class="btn btn-primary">Add to Cart</button>
+            </form>
+            
             <a href="{% url 'view_cart' %}" class="btn text-white gap-2 align-items-center" style="background: #17b95b;">
                 <i class="fa-solid  fa-cart-circle-check" style="font-size: 1rem;"></i>
                 <b class="text-nowrap" style="font-size: 0.75rem;">View your cart</b>

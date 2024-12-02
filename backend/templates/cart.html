@@ -169,47 +169,40 @@
 
         <!-- Terms And Conditions section start-->
 
-
         <section class="extremeContainer2 container" style="padding-block: 6rem 3rem;">
             <h1 class="section-title">My Cart</h1>
         
             <div class="d-flex flex-column gap-5 mt-5">
                 <div class="allCartItems d-flex flex-column gap-3">
+                    
                     {% for item in accessories_in_cart %}
-                        <div class="cartItem d-flex flex-column gap-2" data-id="{{ item.id }}">
-                            <div class="d-flex gap-3 align-items-center p-2 rounded-2" style="background: var(--secondaryColor);">
-                                <img src="{{ item.image.url }}" alt="{{ item.name }}" class="rounded-2" style="width: 80px;">
-                                <div class="d-flex flex-column">
-                                    <p class="mb-0">{{ item.name }}</p>
-                                    <div class="d-flex gap-2 align-items-center">
-                                        <b>Price:</b>
-                                        <div class="d-flex" style="color: var(--primaryColor);">
-                                            <h6 class="singleProductPrice mb-0">{{ item.price }}</h6>
-                                            <h6 class="mb-0">$</h6>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex gap-2 align-items-center">
-                                        <b>Total Price:</b>
-                                        <div class="d-flex" style="color: var(--primaryColor);">
-                                            <h6 class="totalPrice mb-0">{{ item.price }}</h6>
-                                            <h6 class="mb-0">$</h6>
-                                        </div>
-                                    </div>
+                    <div class="cartItem d-flex flex-column gap-2" data-id="{{ item.accessory.id }}">
+                        <div class="d-flex gap-3 align-items-center p-2 rounded-2" style="background: var(--secondaryColor);">
+                            <img src="{{ item.accessory.image.url }}" alt="{{ item.accessory.name }}" class="rounded-2" style="width: 80px;">
+                            <div class="d-flex flex-column">
+                                <p class="mb-0">{{ item.accessory.name }}</p>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <b>Price:</b>
+                                    <h6>{{ item.accessory.price }}$</h6>
                                 </div>
-                            </div>
-        
-                            <div class="d-flex gap-3 justify-content-between align-items-center p-2">
-                                <div class="d-flex gap-4 align-items-center">
-                                    <button class="QuantityDecrementBtn" data-id="{{ item.id }}">-</button>
-                                    <h6 class="productQuantity" style="color: var(--primaryColor);">1</h6>
-                                    <button class="QuantityIncrementBtn" data-id="{{ item.id }}">+</button>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <b>Total Price:</b>
+                                    <h6 class="totalPrice mb-0" style="color: var(--primaryColor);">{{ item.total_price }}$</h6>
                                 </div>
-                <!-- Font Awesome icon for delete -->
-<i class="cartItemDeleteBtn fa fa-trash" data-id="{{ item.id }}" style="cursor: pointer;"></i>
-
                             </div>
                         </div>
+        
+                        <div class="d-flex gap-3 justify-content-between align-items-center p-2">
+                            <div class="d-flex gap-4 align-items-center">
+                                <button class="QuantityDecrementBtn" data-id="{{ item.accessory.id }}">-</button>
+                                <h6 class="productQuantity" style="color: var(--primaryColor);">{{ item.quantity }}</h6>
+                                <button class="QuantityIncrementBtn" data-id="{{ item.accessory.id }}">+</button>
+                            </div>
+                            <i class="cartItemDeleteBtn fa fa-trash" data-id="{{ item.accessory.id }}" style="cursor: pointer;"></i>
+                        </div>
+                    </div>
                     {% endfor %}
+        
                 </div>
         
                 <div class="d-flex flex-column gap-2">
@@ -223,42 +216,37 @@
                     <div class="d-flex gap-3 justify-content-between">
                         <b>Total</b> <b class="totalBill" style="color: var(--primaryColor);">{{ subtotal|add:45 }}$</b>
                     </div>
-
-
-
-                 
                     
-                        <!-- Form section -->
-                        <form action="{% url 'confirm_order' %}" method="post" class="d-flex flex-column gap-3">
-                            {% csrf_token %}
-                            <div class="form-floating w-100">
-                                <input type="text" name="customerFirstName" class="form-control" id="customerFirstName" required>
-                                <label for="customerFirstName">Your First Name</label>
-                            </div>
-                            <div class="form-floating w-100">
-                                <input type="text" name="customerLastName" class="form-control" id="customerLastName" required>
-                                <label for="customerLastName">Your Last Name</label>
-                            </div>
-                            <div class="form-floating">
-                                <input type="email" name="customerEmail" class="form-control" id="customerEmail" required>
-                                <label for="customerEmail">Your Email address</label>
-                            </div>
-                            <div class="form-floating">
-                                <input type="number" name="customerPhone" class="form-control" id="customerPhone" required>
-                                <label for="customerPhone">Your Phone number</label>
-                            </div>
-                            <div class="form-floating">
-                                <input type="text" name="customerAddress" class="form-control" id="customerAddress" required>
-                                <label for="customerAddress">Your Address</label>
-                            </div>
-                            
-                            <button type="submit" class="carousel-inner-btn py-2 rounded-2 submitButton">Confirm Buy</button>
-                        </form>
-                    </section>
-                    
+                    <!-- Form section -->
+                    <form action="{% url 'confirm_order' %}" method="post" class="d-flex flex-column gap-3 mt-4">
+                        {% csrf_token %}
+                        <div class="form-floating w-100">
+                            <input type="text" name="customerFirstName" class="form-control" id="customerFirstName" required>
+                            <label for="customerFirstName">Your First Name</label>
+                        </div>
+                        <div class="form-floating w-100">
+                            <input type="text" name="customerLastName" class="form-control" id="customerLastName" required>
+                            <label for="customerLastName">Your Last Name</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="email" name="customerEmail" class="form-control" id="customerEmail" required>
+                            <label for="customerEmail">Your Email address</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="number" name="customerPhone" class="form-control" id="customerPhone" required>
+                            <label for="customerPhone">Your Phone number</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="text" name="customerAddress" class="form-control" id="customerAddress" required>
+                            <label for="customerAddress">Your Address</label>
+                        </div>
+                        
+                        <button type="submit" class="carousel-inner-btn py-2 rounded-2 submitButton">Confirm Buy</button>
+                    </form>
                 </div>
             </div>
         </section>
+        
         
 
 
@@ -420,6 +408,108 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"
 integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw=="
 crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+
+
+
+<script>
+    document.querySelectorAll('.QuantityIncrementBtn').forEach(button => {
+        button.addEventListener('click', function() {
+            const accessoryId = this.getAttribute('data-id');
+            const quantityElement = this.parentNode.querySelector('.productQuantity');
+            let currentQuantity = parseInt(quantityElement.textContent);
+    
+            // Increment the quantity
+            currentQuantity += 1;
+            quantityElement.textContent = currentQuantity;
+    
+            // Make an AJAX request to update the session
+            fetch(`/update_cart/${accessoryId}/?action=increment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ quantity: currentQuantity })
+            });
+        });
+    });
+    
+    document.querySelectorAll('.QuantityDecrementBtn').forEach(button => {
+        button.addEventListener('click', function() {
+            const accessoryId = this.getAttribute('data-id');
+            const quantityElement = this.parentNode.querySelector('.productQuantity');
+            let currentQuantity = parseInt(quantityElement.textContent);
+    
+            // Decrement the quantity only if greater than 1
+            if (currentQuantity > 1) {
+                currentQuantity -= 1;
+                quantityElement.textContent = currentQuantity;
+    
+                // Make an AJAX request to update the session
+                fetch(`/update_cart/${accessoryId}/?action=decrement`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ quantity: currentQuantity })
+                });
+            }
+        });
+    });
+    
+    </script>
+    
+
+<script>
+    function updateCart(accessoryId, action) {
+        $.ajax({
+            url: "{% url 'update_cart_view' %}",  // Ensure this matches the URL path in your Django urls.py
+            type: "POST",
+            data: {
+                'accessory_id': accessoryId,
+                'action': action,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.status === "success") {
+                    // Update cart quantities and totals on the page
+                    $("#subtotal").text(response.subtotal.toFixed(2));
+                    $("#total").text(response.total.toFixed(2));
+                    $("#quantity_" + response.accessory_id).text(response.cart_quantity);
+
+                    if (response.cart_quantity === 0) {
+                        $("#cart_item_" + response.accessory_id).remove();  // Remove item row if quantity is zero
+                    }
+                }
+            },
+            error: function(error) {
+                console.log("Error:", error);
+            }
+        });
+    }
+
+    // Event listeners for cart buttons
+    $(document).ready(function() {
+        $(".add-to-cart").click(function() {
+            let accessoryId = $(this).data("id");
+            updateCart(accessoryId, "add");
+        });
+
+        $(".remove-from-cart").click(function() {
+            let accessoryId = $(this).data("id");
+            updateCart(accessoryId, "remove");
+        });
+
+        $(".delete-from-cart").click(function() {
+            let accessoryId = $(this).data("id");
+            updateCart(accessoryId, "delete");
+        });
+    });
+</script>
+
 
 
 <script>

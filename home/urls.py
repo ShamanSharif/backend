@@ -7,6 +7,7 @@ from .views import sell_device, privacy_policy
 from .views import terms_conditions, franchise_view
 from .views import career_view, apply_for_job, contact_page
 from .views import blogs_page, blog_detail, products_view, product_details
+from .views import cart_view, update_cart_view
 
 
 urlpatterns = [
@@ -28,6 +29,9 @@ urlpatterns = [
     path('cart/', views.cart_view, name='view_cart'),
     path('cart/remove/<int:product_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('cart/confirm_order/', views.confirm_order, name='confirm_order'),
+    path('update-cart/', update_cart_view, name='update_cart_view'),
+    path('cart/increment/<int:accessory_id>/', views.increment_quantity, name='increment_quantity'),
+    path('cart/decrement/<int:accessory_id>/', views.decrement_quantity, name='decrement_quantity'),
     
 
     

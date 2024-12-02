@@ -213,7 +213,7 @@
                         <label class="eachContent w-100 d-flex flex-column overflow-hidden pt-3">
                             <p class="m-0" style="font-weight: 500; color: var(--primaryColor)">Price: <b class="rangeOutput text-black-50" id="rangeOutput0">{{ selected_max_price }}</b> $</p>
                             <form method="GET" action="{% url 'products' %}">
-                                <input type="range" name="maxPrice" id="maxPrice" min="0" max="194" value="{{ selected_max_price }}" step="1" class="rangeInput w-100 px-0">
+                                <input type="range" name="maxPrice" id="maxPrice" min="0" max="394" value="{{ selected_max_price }}" step="1" class="rangeInput w-100 px-0">
                                 <button type="submit">Apply Price</button>
                             </form>
                         </label>

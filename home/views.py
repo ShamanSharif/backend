@@ -391,37 +391,111 @@ def product_details(request, product_id):
 
 
 
-from django.shortcuts import render, redirect
-from .models import Accessory, Logo, NavbarItem, RepairService
+# from django.shortcuts import render, redirect
+# from .models import Accessory, Logo, NavbarItem, RepairService
+
+# def cart_view(request):
+#     logo = Logo.objects.first()
+#     navbar_items = NavbarItem.objects.all()
+#     repair_services = RepairService.objects.all()
+
+#     # Retrieve cart item IDs from the session
+#     cart = request.session.get('cart', [])
+#     accessories_in_cart = Accessory.objects.filter(id__in=cart)
+
+#     # Calculate subtotal
+#     subtotal = sum(item.price for item in accessories_in_cart)
+
+#     context = {
+#         'logo': logo,
+#         'navbar_items': navbar_items,
+#         'repair_services': repair_services,
+#         'accessories_in_cart': accessories_in_cart,
+#         'subtotal': subtotal,
+#         'delivery_charge': 45,  # Example fixed delivery charge
+#     }
+#     return render(request, 'cart.html', context)
+
+
+
+from django.shortcuts import render
+from .models import Logo, NavbarItem, RepairService, Accessory
 
 def cart_view(request):
     logo = Logo.objects.first()
     navbar_items = NavbarItem.objects.all()
     repair_services = RepairService.objects.all()
+    
+    cart = request.session.get('cart', {})
+    accessories_in_cart = Accessory.objects.filter(id__in=cart.keys())
 
-    # Retrieve cart item IDs from the session
-    cart = request.session.get('cart', [])
-    accessories_in_cart = Accessory.objects.filter(id__in=cart)
+    items = []
+    subtotal = 0
+    for accessory in accessories_in_cart:
+        quantity = cart[str(accessory.id)]
+        total_price = accessory.price * quantity
+        items.append({
+            'accessory': accessory,
+            'quantity': quantity,
+            'total_price': total_price,
+        })
+        subtotal += total_price
 
-    # Calculate subtotal
-    subtotal = sum(item.price for item in accessories_in_cart)
+    delivery_charge = 45
+    total = subtotal + delivery_charge
 
     context = {
         'logo': logo,
         'navbar_items': navbar_items,
         'repair_services': repair_services,
-        'accessories_in_cart': accessories_in_cart,
+        'accessories_in_cart': items,
         'subtotal': subtotal,
-        'delivery_charge': 45,  # Example fixed delivery charge
+        'delivery_charge': delivery_charge,
+        'total': total,
     }
     return render(request, 'cart.html', context)
 
+
+
+
+
+# def add_to_cart(request, product_id):
+#     cart = request.session.get('cart', [])
+#     if product_id not in cart:
+#         cart.append(product_id)
+#         request.session['cart'] = cart
+#     return redirect('view_cart')
+
+
+# def add_to_cart(request, accessory_id):
+#     # Get the cart from the session, or initialize it as an empty dictionary if it doesn't exist
+#     cart = request.session.get('cart', {})
+
+#     # Check if the accessory ID is already in the cart
+#     if str(accessory_id) in cart:
+#         # If it's already in the cart, increase the quantity
+#         cart[str(accessory_id)] += 1
+#     else:
+#         # If it's not in the cart, add it with a quantity of 1
+#         cart[str(accessory_id)] = 1
+
+#     # Save the cart back to the session
+#     request.session['cart'] = cart
+#     request.session.modified = True
+
+#     return redirect('view_cart')
+
 def add_to_cart(request, product_id):
-    cart = request.session.get('cart', [])
-    if product_id not in cart:
-        cart.append(product_id)
-        request.session['cart'] = cart
+    quantity = int(request.POST.get('quantity', 1))  # Get quantity from form input
+    cart = request.session.get('cart', {})
+    if str(product_id) in cart:
+        cart[str(product_id)] += quantity  # Add the specified quantity
+    else:
+        cart[str(product_id)] = quantity  # Set initial quantity
+    request.session['cart'] = cart
     return redirect('view_cart')
+
+
 
 
 from django.http import JsonResponse
@@ -478,3 +552,72 @@ def confirm_order(request):
     messages.success(request, "Thank you for shopping with us!")
     
     return redirect('view_cart')
+
+
+
+from django.http import JsonResponse
+from .models import Accessory
+
+def update_cart_view(request):
+    if request.method == "POST" and request.is_ajax():
+        accessory_id = request.POST.get("accessory_id")
+        action = request.POST.get("action")
+        cart = request.session.get("cart", {})
+
+        try:
+            # Ensure the item exists in the database
+            accessory = Accessory.objects.get(id=accessory_id)
+
+            if action == "add":
+                cart[accessory_id] = cart.get(accessory_id, 0) + 1  # Increase quantity
+            elif action == "remove":
+                if accessory_id in cart:
+                    cart[accessory_id] -= 1
+                    if cart[accessory_id] <= 0:
+                        del cart[accessory_id]  # Remove item if quantity is zero or less
+            elif action == "delete":
+                cart.pop(accessory_id, None)  # Remove item entirely from cart
+
+            # Save updated cart back to session
+            request.session["cart"] = cart
+            request.session.modified = True  # Ensure session is saved
+
+            # Recalculate subtotal and total
+            subtotal = sum(Accessory.objects.get(id=item_id).price * quantity for item_id, quantity in cart.items())
+            delivery_charge = 45
+            total = subtotal + delivery_charge
+
+            return JsonResponse({
+                "status": "success",
+                "subtotal": subtotal,
+                "delivery_charge": delivery_charge,
+                "total": total,
+                "cart_quantity": cart.get(accessory_id, 0),
+                "accessory_id": accessory_id
+            })
+        except Accessory.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Accessory does not exist."})
+
+    return JsonResponse({"status": "error", "message": "Invalid request"})
+
+
+
+
+
+
+from django.http import JsonResponse
+
+def increment_quantity(request, accessory_id):
+    cart = request.session.get('cart', {})
+    cart[str(accessory_id)] = cart.get(str(accessory_id), 1) + 1  # Increase quantity by 1
+    request.session['cart'] = cart
+    return JsonResponse({'status': 'success', 'quantity': cart[str(accessory_id)]})
+
+def decrement_quantity(request, accessory_id):
+    cart = request.session.get('cart', {})
+    if cart.get(str(accessory_id), 1) > 1:
+        cart[str(accessory_id)] -= 1  # Decrease quantity by 1 if above 1
+    else:
+        del cart[str(accessory_id)]  # Remove item if quantity is 1
+    request.session['cart'] = cart
+    return JsonResponse({'status': 'success', 'quantity': cart.get(str(accessory_id), 0)})
