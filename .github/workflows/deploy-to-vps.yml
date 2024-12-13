@@ -1,0 +1,41 @@
+name: Docker Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        run: |
+          sudo docker build -t cellnstyle -f Dockerfile .
+
+      - name: Save Docker Image
+        run: |
+          sudo docker save -o cellnstyle.tar cellnstyle
+          sudo chmod 777 cellnstyle.tar
+
+      - name: Deploy to Remote Server
+        env:
+          SSH_USER: ${{ secrets.REMOTE_USER }}
+          SSH_KEY: ${{ secrets.REMOTE_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          # Copy the docker image and the app tar files to server
+          scp -o StrictHostKeyChecking=no cellnstyle.tar ${SSH_USER}@50.6.199.227:/root/Application/Backend
+
+          # SSH into the remote server
+          ssh -o StrictHostKeyChecking=no ${SSH_USER}@50.6.199.227 << EOF
+            cd /root/Application/Backend
+            docker load -i cellnstyle.tar
+            docker compose up -d
+          EOF
