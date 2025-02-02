@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}
+{{terms.title}}
+{% endblock title %}
+{% load static %}
+{% block content %}
+
+
+    <main class="flex-shrink-0">
+      <!-- Main Content Start -->
+
+      <!-- Terms And Conditions section start-->
+
+      <section
+        class="extremeContainer container"
+        style="padding-block: 6rem 3rem"
+      >
+        <h1 class="section-title">{{terms.title}}</h1>
+        <h6 class="text-center">
+          <b style="color: var(--primaryColor)">Last Updated: </b>
+          <span>{{terms.last_updated | date:"M d, Y"}}</span>
+        </h6>
+        <p class="text-center section-subtext mt-4">
+          {{terms.subtext|safe}}
+        </p>
+
+        <div class="d-flex flex-column gap-4 mt-4">
+            {{terms.description|safe}}
+        </div>
+      </section>
+
+      <!-- Terms And Conditions section end-->
+
+      <!-- Main Content End -->
+
+      <!-- Floating Social Media Start -->
+
+      {% include "socialMedia.html" %}
+
+      <!-- Floating Social Media End -->
+    </main>
+
+{% endblock content %}

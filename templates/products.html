@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock title %}
+{% load static %}
+{% block content %}
+
+    <main class="flex-shrink-0">
+      <!-- Main Content start -->
+
+      <section
+        class="contentSection productsContents container-fluid px-sm-0"
+        style="padding-block: 5rem"
+      >
+        <div class="">
+          <div class="productsContentsWrapper d-flex overflow-hidden">
+            <div
+              class="productsSidebar flex-sm-shrink-0 h-100"
+              style="
+                overflow-y: scroll;
+                scrollbar-width: thin;
+                background: rgba(238, 238, 238, 1);
+                width: 100% !important;
+              "
+            >
+              <div
+                class="productsCategories d-flex flex-column justify-content-start align-items-center px-3"
+              >
+                <div
+                  class="eachContent w-100 d-flex gap-2 align-items-center justify-content-sm-between py-3"
+                >
+                  <!-- Button trigger modal -->
+                  <button
+                    type="button"
+                    class="search-btn rounded-0"
+                    style="background: #ededed"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Search Product
+                  </button>
+                </div>
+
+                <label
+                  class="eachContent w-100 d-flex flex-column overflow-hidden pt-3"
+                >
+                  <p
+                    class="m-0"
+                    style="font-weight: 500; color: var(--primaryColor)"
+                  >
+                    Price:
+                    <b class="rangeOutput text-black-50" id="rangeOutput0"></b>
+                    $
+                  </p>
+
+                  <input
+                    type="range"
+                    name="maxPrice"
+                    id="priceRange"
+                    min="0"
+                    max="194"
+                    value="194"
+                    step="1"
+                    class="rangeInput w-100 px-0"
+                  />
+                </label>
+
+                <label
+                  class="eachContent w-100 d-flex gap-2 align-items-center justify-content-sm-between py-3">
+                  <p class="m-0" style="font-weight: 500">All</p>
+                  <i
+                    class="fa-solid fa-angle-right"
+                    style="font-size: 0.7rem"
+                  ></i>
+                  <input
+                    type="radio"
+                    name="productsCategory"
+                    value="all"
+                    id="all"
+                    checked
+                    class="d-none eachProductsCategory"
+                  />
+                </label>
+                {% for category in categories %}
+                <label
+                  class="eachContent w-100 d-flex gap-2 align-items-center justify-content-sm-between py-3">
+                  <p class="m-0" style="font-weight: 500">
+                    {{ category.title }}
+                  </p>
+                  <i
+                    class="fa-solid fa-angle-right"
+                    style="font-size: 0.7rem"
+                  ></i>
+                  <input
+                    type="radio"
+                    name="productsCategory"
+                    value="{{ category.id }}"
+                    id="caseAndProtection"
+                    class="d-none eachProductsCategory category-filter"
+                    data-category-id="{{ category.id }}"
+                  />
+                </label>
+                {% endfor %}
+
+              
+              </div>
+            </div>
+
+            <div
+              class="h-100 no-scrollbar pt-4"
+              style="
+                overflow-y: scroll;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+              "
+            >
+              <div class="d-flex flex-column gap-4 container-fluid">
+                <h1 id="dynamicTitle" class="section-title text-center">All Products</h1>
+
+                <!-- <h1 class="section-title text-center">Results for Case And Protection</h1> -->
+
+                <div class="allProducts">
+
+                  {% for product in products %}
+                  <a href="tel:{{web.whatsApp_number}}" class="card gap-3 rounded-3 product-item products " data-price="{{ product.original_price }}" id="{{ category.id }}" data-category-id="{{ product.category.id }}" >
+                    <img
+                      src="{{product.image.url}}"
+                      alt="Product Image"
+                      class="card-img-top rounded-3"
+                    />
+                    <div
+                      class="card-body d-flex flex-column gap-3 align-items-center text-center"
+                    >
+                      <p class="m-0">
+                        {{ product.title }}
+                      </p>
+                      <div class="d-flex gap-2">
+                        <h5 class="card-title m-0">{{product.original_price}}$</h5>
+                        {% if product.previous_price %}
+                          <h6
+                            style="
+                              color: var(--primaryColor);
+                              text-decoration: line-through;
+                            ">
+                          {{product.previous_price}}$
+                          </h6>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </a>
+                  {% endfor %}
+
+                  
+                </div>
+
+                {% comment %} <div class="text-center">
+                  <a href="" class="commonBtn text-dark"
+                    >Load more <i class="fa-solid fa-chevron-right c-arrow"></i
+                  ></a>
+                </div> {% endcomment %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Search Bar Modal -->
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header border-0">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">
+                Search here
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form class="example" method="GET" action="{{ search_url }}">
+                <div class="src-bar">
+                  <input
+                    class="search-bar"
+                    type="text"
+                    placeholder="Search.."
+                    name="search"
+                    onkeyup="filterFunction()"
+                    value="{{ query }}"
+                  />
+                  <i class="fa fa-search p-3"></i>
+                </div>
+              </form>
+              <div
+                class="searchBarProductsWrapper container-fluid d-flex flex-column pt-3 gap-3"
+              >
+                <b
+                  class="searchResults"
+                  style="color: var(--custom-orange-color)"
+                ></b>
+                {% if products %}
+                {% for product in products %}
+                <a
+                  href="tel:{{web.whatsApp_number}}"
+                  class="searchBarProduct p-2 border rounded-2">
+                  <img
+                    src="{{product.image.url}}"
+                    style="width: 70px; aspect-ratio: 1"
+                    alt=""
+                    class="searchBarProductImage rounded-2"
+                  />
+                  <b class="searchBarProductTitle" title="Panel Light"
+                    >{{product.title}}</b
+                  >
+                </a>
+                {% endfor %}
+                {% else %}
+                   <b>No products found</b>
+                {% endif %}
+
+               
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content End -->
+
+      <!-- Floating Social Media Start -->
+{% include "socialMedia.html" %}
+
+      <!-- Floating Social Media End -->
+    </main>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const categoryRadios = document.querySelectorAll('.eachProductsCategory');
+        const products = document.querySelectorAll('.product-item');
+        const priceRange = document.getElementById('priceRange');
+        const rangeOutput = document.getElementById('rangeOutput0');
+        const dynamicTitle = document.getElementById('dynamicTitle'); // Title element
+    
+        // Initialize range output
+        if (rangeOutput) {
+          rangeOutput.textContent = priceRange ? priceRange.value : 0;
+        }
+    
+        // Function to update the dynamic title
+        function updateTitle() {
+          const selectedCategory = document.querySelector('.eachProductsCategory:checked');
+          const categoryLabel = selectedCategory
+            ? selectedCategory.closest('label').querySelector('p').textContent.trim()
+            : 'All';
+    
+          if (categoryLabel === 'All') {
+            dynamicTitle.textContent = 'All Products';
+          } else {
+            dynamicTitle.textContent = `${categoryLabel} Products`;
+          }
+        }
+    
+        // Function to filter products
+        function filterProducts() {
+          const selectedCategory = document.querySelector('.eachProductsCategory:checked')?.value || 'all';
+          const maxPrice = parseFloat(priceRange.value);
+    
+          products.forEach(product => {
+            const productCategoryId = product.getAttribute('data-category-id');
+            const productPrice = parseFloat(product.getAttribute('data-price'));
+    
+            // Show all products if "all" is selected, otherwise filter by category and price
+            if (
+              (selectedCategory === 'all' || productCategoryId === selectedCategory) &&
+              productPrice <= maxPrice
+            ) {
+              product.style.display = 'inline-block'; // Show product
+            } else {
+              product.style.display = 'none'; // Hide product
+            }
+          });
+    
+          updateTitle(); // Update the title dynamically
+        }
+    
+        // Listen for category changes
+        categoryRadios.forEach(radio => {
+          radio.addEventListener('change', filterProducts);
+        });
+    
+        // Listen for range input changes
+        if (priceRange) {
+          priceRange.addEventListener('input', function () {
+            if (rangeOutput) {
+              rangeOutput.textContent = this.value; // Update range display
+            }
+            filterProducts(); // Apply filtering
+          });
+        }
+    
+        // Initial filtering to apply default values
+        filterProducts();
+      });
+    </script>
+    
+{% endblock %}

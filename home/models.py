@@ -1,261 +1,185 @@
-
-# home/models.py
-from django.utils.text import slugify
-
 from django.db import models
-
-class HeroSection(models.Model):
+from ckeditor.fields import RichTextField
+from django.utils.html import strip_tags
+from django.core.exceptions import ValidationError
+from django.utils.text import slugify
+from Website_Settings.models import Store
+from django.core.validators import MinValueValidator, MaxValueValidator
+# Create your models here.
+class Slider(models.Model):
     LINK_TYPE_CHOICES = [
         ('url', 'External URL'),
         ('tel', 'Phone Link'),
         ('scroll', 'Scroll to Section'),
     ]
-
-    title = models.CharField(max_length=200)
+    title = RichTextField(max_length=500)
     subtitle = models.TextField()
+    image = models.ImageField(upload_to='slider/')
     button_text = models.CharField(max_length=100)
-    button_link = models.CharField(max_length=200)  # Use CharField for flexibility
-    link_type = models.CharField(max_length=10, choices=LINK_TYPE_CHOICES, default='url')  # New field for link type
-    background_image = models.ImageField(upload_to='hero_images/')
-    active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.title
-
-
-
-
-class Accessory(models.Model):
-    name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    original_price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='accessories/')
-    category = models.CharField(max_length=50)  # e.g., 'Case And Protection', 'Battery', etc.
-
-    def __str__(self):
-        return self.name
-
-
-
-from django.db import models
-
-# Model for the logo
-class Logo(models.Model):
-    image = models.ImageField(upload_to='logo/')
-    link = models.URLField(default='/')  # Link to the homepage
+    button_link = models.CharField(max_length=200) 
+    link_type = models.CharField(max_length=10, choices=LINK_TYPE_CHOICES, default='url')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
-    def __str__(self):
-        return "Website Logo"
-
-# Model for top-level navbar items
-class NavbarItem(models.Model):
-    title = models.CharField(max_length=50)
-    link = models.URLField(null=True, blank=True)
-    is_dropdown = models.BooleanField(default=False)
-    
-    def __str__(self):
-        return self.title
-
-# Model for dropdown items (for dropdown menus like 'Company' and 'Repair Service')
-class DropdownItem(models.Model):
-    parent = models.ForeignKey(NavbarItem, related_name='dropdown_items', on_delete=models.CASCADE)
-    title = models.CharField(max_length=50)
-    link = models.URLField()
+    def clean_title(self):
+        return strip_tags(self.title)
 
     def __str__(self):
-        return f"{self.title} (dropdown under {self.parent.title})"
-
-# Model for repair services with image
-class RepairService(models.Model):
-    title = models.CharField(max_length=50)
-    description = models.TextField(null=True, blank=True)
-    image = models.ImageField(upload_to='repair_services/')
-    link = models.URLField(default="#")
-    
-    def __str__(self):
-        return self.title
-
-
-
-
-class RepairCategory(models.Model):
+        return self.clean_title()
+class Device(models.Model):
     name = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='categories-images/')
-    link = models.URLField()
-    
+    image = models.ImageField(upload_to='devices/')
+    slug = models.SlugField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)  # Automatically generate slug from name
+        super().save(*args, **kwargs)
     def __str__(self):
         return self.name
-
-
-from django.db import models
-
-class GoogleReview(models.Model):
-    reviewer_name = models.CharField(max_length=100)
-    reviewer_image = models.ImageField(upload_to='reviewers/')
-    rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0)
-    review_text = models.TextField()
-    review_link = models.URLField()
+    def brands(self):
+        return self.brand_set.all()
     
+class Brand(models.Model):
+    name = models.CharField(max_length=25)
+    device = models.ForeignKey(Device, on_delete=models.CASCADE)
+
     def __str__(self):
-        return self.reviewer_name
+        return f"{self.name} ({self.device.name})"
+    def get_models(self):
+        """Returns all models associated with this brand."""
+        return self.model_set.all()
     
+class Model(models.Model):
+    name = models.CharField(max_length=25)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.name} ({self.brand.name})"
 
+class DeviceProblem(models.Model):
+    problem = models.CharField(max_length=100)
+    def __str__(self):
+        return self.problem
 
-from django.db import models
-
-class Blog(models.Model):
-    title = models.CharField(max_length=255)
-    author = models.CharField(max_length=100, default="Admin")
-    date = models.DateField()
+class DeviceSell(models.Model):
+    type = models.ForeignKey(Device, on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    model = models.ForeignKey(Model, on_delete=models.CASCADE) 
     description = models.TextField()
-    image = models.ImageField(upload_to='blogs/')
-    
-    url = models.URLField(max_length=200, blank=True, null=True)  # If needed, keep external URL
-    slug = models.SlugField(null=True, blank=True)
-    
+    customerFirstName = models.CharField(max_length=100)
+    customerLastName = models.CharField(max_length=100)
+    customerEmail = models.EmailField()
+    customerPhone = models.CharField(max_length=15)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.customerFirstName} {self.customerLastName} - {self.type} {self.brand} {self.model}"
+class DeviceSellImage(models.Model):
+    device_sell = models.ForeignKey(DeviceSell, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='device_images/')
+    def __str__(self):
+        return f"{self.device_sell.customerFirstName} {self.device_sell.customerLastName}'s device image "
+
+
+class FranchiseSections(models.Model):
+    title = models.CharField(max_length=200)
     def __str__(self):
         return self.title
-    def save(self, *args, **kwargs):
-        if not self.slug:  # Only set slug if it's not already set
-            self.slug = slugify(self.title)
-        super().save(*args, **kwargs)
-  
-
-
-
-
-class FAQ(models.Model):
-    question = models.CharField(max_length=255)
-    answer = models.TextField()
-
+    @property
+    def get_features(self):
+        return self.features.all()
+    
+class Features(models.Model):
+    section = models.ForeignKey(FranchiseSections, on_delete=models.CASCADE,  related_name="features")
+    title = models.CharField(max_length=100)
     def __str__(self):
-        return self.question
+        return self.title
+class FranchiseContact(models.Model):
+    franchiseApplicantFirstName = models.CharField(max_length=100)
+    franchiseApplicantLastName = models.CharField(max_length=100)
+    franchiseApplicantEmail = models.EmailField(unique=True)
+    franchiseApplicantPhone = models.CharField(max_length=15)
+    franchiseApplicantStreetAddress = models.CharField(max_length=200)
+    aboutFranchiseApplicant = models.TextField()
+    def __str__(self):
+        return self.franchiseApplicantFirstName + " " + self.franchiseApplicantLastName
 
-from django.db import models
-
-class RepairRequest(models.Model):
-    BRAND_CHOICES = [
-        ('iphone', 'iPhone'),
-        ('samsung', 'Samsung'),
-        ('lg', 'LG'),
-        ('google', 'Google'),
-        ('motorola', 'Motorola'),
-        ('other', 'Other'),
+class Repair(models.Model):
+    SERVICE_RECEIVE_METHOD_CHOICES = [
+        ('visitStore', 'visitStore'),
+        ('mail', 'mail'),
+        ('comeToMe', 'comeToMe'),
     ]
-
-    brand = models.CharField(max_length=50, choices=BRAND_CHOICES)
-    model = models.CharField(max_length=50)
-    problems = models.TextField()  # Storing problems as a comma-separated string
+    TIME_CHOICES = [
+        ('12am-2am', '12am-2am'),
+        ('2am-4am', '2am-4am'),
+        ('4am-6am', '4am-6am'),
+        ('6am-8am', '6am-8am'),
+        ('8am-10am', '8am-10am'),
+        ('10am-12am', '10am-12am'),
+    ]
+    device = models.ForeignKey(Device, on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True, blank=True)
+    model = models.ForeignKey(Model, on_delete=models.CASCADE, null=True, blank=True)
+    problem = models.ManyToManyField(DeviceProblem)
     description = models.TextField(null=True, blank=True)
-    service_method = models.CharField(max_length=20)
-    store_location = models.CharField(max_length=100, null=True, blank=True)
-    preferred_date = models.CharField(max_length=100, null=True, blank=True)
-    preferred_time = models.CharField(max_length=20, null=True, blank=True)
-    contact_first_name = models.CharField(max_length=50)
-    contact_last_name = models.CharField(max_length=50)
-    contact_email = models.EmailField()
-    contact_phone = models.CharField(max_length=15)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.brand} {self.model} Repair - {self.contact_first_name} {self.contact_last_name}"
-
-
-
-
-from django.db import models
-
-class SellDevice(models.Model):
-    DEVICE_TYPE_CHOICES = [
-        ('phone', 'Phone'),
-        ('tab', 'Tab'),
-        ('computer', 'Computer'),
-        ('console', 'Console'),
-        ('headset', 'Headset'),
-        ('something else', 'Something Else'),
-    ]
+    serviceReceiveMethod = models.CharField(max_length=50,choices=SERVICE_RECEIVE_METHOD_CHOICES)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE, null=True, blank=True)
+    date = models.CharField(max_length=50,null=True, blank=True)
+    date2 = models.CharField(max_length=50,null=True, blank=True)
+    time = models.CharField(max_length=20,choices=TIME_CHOICES,null=True, blank=True)
+    streetAddress = models.CharField(max_length=200,null=True, blank=True)
+    customerFirstName = models.CharField(max_length=100)
+    customerLastName = models.CharField(max_length=100)
+    customerEmail = models.EmailField()
+    customerPhone = models.CharField(max_length=20)
+    termsAndConditions = models.BooleanField(default=False)
     
-    type = models.CharField(max_length=50, choices=DEVICE_TYPE_CHOICES)
-    brand = models.CharField(max_length=50)
-    model = models.CharField(max_length=50)
-    description = models.TextField()
-    device_images = models.ImageField(upload_to='device_images/', null=True, blank=True)
-    customer_first_name = models.CharField(max_length=50)
-    customer_last_name = models.CharField(max_length=50)
-    customer_email = models.EmailField()
-    customer_phone = models.CharField(max_length=15)
-    submitted_at = models.DateTimeField(auto_now_add=True)
+    
 
     def __str__(self):
-        return f"{self.customer_first_name} {self.customer_last_name} - {self.type} {self.brand} {self.model}"
+        return f"{self.customerFirstName} {self.customerLastName} wants repair for {self.device} | {self.brand} | {self.model}"
+    def get_problems(self):
+        return ", ".join([problem.problem for problem in self.problem.all()])
 
+    
+    def clean(self):
+        # Conditional logic based on serviceReceiveMethod
+        if self.serviceReceiveMethod == 'visitStore':
+            if not self.store:
+                raise ValidationError("Store is required when 'Visit Store' is selected.")
+            if self.streetAddress:
+                raise ValidationError("Street Address should be empty when 'Visit Store' is selected.")
+            if not self.date:
+                raise ValidationError("Date is required when 'Visit Store' is selected.")
+            if self.date2:
+                raise ValidationError("Date2 should be empty when 'Visit Store' is selected.")
+        elif self.serviceReceiveMethod == 'mail':
+            if self.date or self.date2 or self.time:
+                raise ValidationError("Date and Time should be empty when 'Mail in' is selected.")
+            if not self.streetAddress:
+                raise ValidationError("Street Address is required when 'Mail in' is selected.")
+            if self.store:
+                raise ValidationError("Store should be empty when 'Mail in' is selected.")
+        elif self.serviceReceiveMethod == 'comeToMe':
+            if not self.streetAddress:
+                raise ValidationError("Street Address is required when 'Come to me' is selected.")
+            if self.store:
+                raise ValidationError("Store should be empty when 'Come to me' is selected.")
+            if not self.date2:
+                    raise ValidationError("Date2 is required when 'Come to me' is selected.")
+            if self.date:
+                raise ValidationError("Date should be empty when 'Come to me' is selected.")
 
-
-
-
-from django.db import models
-
-class FranchiseApplication(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.EmailField()
-    phone_number = models.CharField(max_length=15)
-    street_address = models.TextField()
-    about_applicant = models.TextField()
-    submitted_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name} - {self.email}"
-
-
-
-from django.db import models
-
-class JobOpening(models.Model):
-    title = models.CharField(max_length=255)
-    department = models.CharField(max_length=255)
-    employment_type = models.CharField(max_length=50)  # Full Time, Part Time
-    location = models.CharField(max_length=100)  # Onsite, Remote
-    salary_range = models.CharField(max_length=50)  # E.g., "$2000 - $4500 USD/month"
-    description = models.TextField()
-    responsibilities = models.TextField()
-    requirements = models.TextField()
-
+class ProductCategory(models.Model):
+    title = models.CharField(max_length=50)
     def __str__(self):
         return self.title
-
-class JobApplication(models.Model):
-    job = models.ForeignKey(JobOpening, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.EmailField()
-    phone_number = models.CharField(max_length=15)
-    message = models.TextField(blank=True, null=True)
-    resume = models.FileField(upload_to='resumes/')
-    applied_at = models.DateTimeField(auto_now_add=True)
-
+class Product(models.Model):
+    title = models.CharField(max_length=100)
+    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='products/')
+    previous_price = models.PositiveIntegerField(validators=[MinValueValidator(0),MaxValueValidator(194)], blank=True, null=True)
+    original_price = models.PositiveIntegerField(validators=[MinValueValidator(0),MaxValueValidator(194)])
     def __str__(self):
-        return f"{self.first_name} {self.last_name} - {self.job.title}"
-
-
-
-
-from django.db import models
-from django.db.models import JSONField
-
-from decimal import Decimal
-
-class Order(models.Model):
-    customer_first_name = models.CharField(max_length=50)
-    customer_last_name = models.CharField(max_length=50)
-    customer_email = models.EmailField()
-    customer_phone = models.CharField(max_length=15)
-    customer_address = models.TextField()
-    items = JSONField()  # Store items in JSON format: [{"name": ..., "quantity": ..., "price": ...}, ...]
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Order {self.id} by {self.customer_first_name} {self.customer_last_name}"
-#comments added
+        return self.title
