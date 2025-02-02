@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% block title %}Career{% endblock %}
+{% load static %}
+{% block content %}
+    <main class="flex-shrink-0">
+      <!-- Main Content Start -->
+
+      <!-- Career section start-->
+
+      <section
+        class="container d-flex flex-column gap-5"
+        style="padding-block: 6rem 3rem"
+      >
+        <div class="d-flex flex-column align-items-center">
+          <h1 class="">Current Openings</h1>
+          <p class="text-center section-subtext">
+            Join our dynamic team! We're looking for passionate individuals to
+            grow with us. Explore the opportunities below and apply today.
+          </p>
+        </div>
+
+        <div class="openingsWrapper gap-3">
+          {% for job in jobs %}
+          <div class="eachOpening d-flex flex-column gap-3 px-3 py-5"
+            data-bs-toggle="modal"
+            data-bs-target="#{{ job.id }}">
+            <p>{{ job.category.title }}</p>
+            <div class="d-flex flex-column gap-2">
+              <h5>{{ job.title }}</h5>
+              <div class="d-flex gap-2 flex-wrap" style="color: gray">
+                <span class="pe-2" style="border-right: 2px solid gray"
+                  >{{ job.work_type }}</span
+                >
+                <span class="pe-2" style="border-right: 2px solid gray"
+                  >{{ job.employment_type }}</span
+                >
+              </div>
+            </div>
+            <div
+              class="d-flex flex-wrap gap-3 justify-content-between align-items-center mt-4"
+            >
+              <div
+                class="d-flex gap-1 align-items-center py-1 px-2 rounded-1"
+                style="background: rgb(208, 208, 208); color: var(--fontColor)"
+              >
+                <b>${{ job.salary_min }} - ${{ job.salary_max }}</b> <span>USD/month</span>
+              </div>
+              <div
+                class="d-flex gap-1 align-items-center justify-content-between"
+              >
+                <h6 class="mb-0">Apply</h6>
+                <i
+                  class="fa-duotone fa-solid fa-arrow-right"
+                  style="transform: rotate(310deg)"
+                ></i>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        
+        </div>
+
+        <!-- Modal -->
+        {% for job in jobs %}
+        <div id="{{ job.id }}" class="modal fade"
+          style="scrollbar-width: none; -ms-overflow-style: none"
+          tabindex="-1"
+          aria-labelledby="technicianApplyFormLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content d-flex flex-column gap-4 p-3">
+              <div class="modal-header p-0 justify-content-end border-0">
+                <i
+                  class="fa-duotone fa-solid fa-circle-xmark"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  style="color: var(--primaryColor); font-size: 2rem"
+                ></i>
+              </div>
+
+              <h4 class="text-center">{{job.title}}</h4>
+
+              <div class="">
+                <h6>Key Responsibilities:</h6>
+                <ul>
+                  {{ job.responsibilities|safe }}
+                </ul>
+              </div>
+
+              <div class="">
+                <h6>Requirements:</h6>
+                <ul>
+                  {{ job.requirements|safe }}
+                </ul>
+              </div>
+
+          <form action="{% url 'career' %}" method="POST" enctype="multipart/form-data" class="d-flex flex-column gap-3">
+                 <h2>  {% for message in messages %}
+                        {{ message }}
+                        {% endfor %}
+                </h2>
+                {% csrf_token %}
+                <label class="text-center d-none">
+                  <input
+                    type="checkbox"
+                    name="JobRole"
+                    value="Repair Technician"
+                    class=""
+                    checked
+                  />
+                  Repair Technician
+                </label>
+                <div class="d-flex flex-column flex-sm-row gap-3">
+                  <div class="form-floating w-100">
+                    <input
+                      type="text"
+                      class="applicantFirstName form-control"
+                      id="applicantFirstName"
+                      name="first_name"
+                      placeholder="First Name"
+                      required
+                    />
+                    <label for="applicantFirstName">First Name</label>
+                  </div>
+                  <div class="form-floating w-100">
+                    <input
+                      type="text"
+                      class="applicantLastName form-control"
+                      id="applicantLastName"
+                      name="last_name"
+                      placeholder="Last Name"
+                      required
+                    />
+                    <label for="applicantLastName">Last Name</label>
+                  </div>
+                </div>
+
+                <div class="form-floating">
+                  <input
+                    type="email"
+                    class="applicantEmail form-control"
+                    id="applicantEmail"
+                    name="email"
+                    placeholder="Email"
+                    required
+                  />
+                  <label for="applicantEmail">Email address</label>
+                </div>
+
+                <div class="form-floating">
+                  <input
+                    type="number"
+                    class="applicantNumber form-control"
+                    id="applicantNumber"
+                    name="phone_number"
+                    placeholder="Phone Numder"
+                    required
+                  />
+                  <label for="applicantNumber">Phone number to reach you</label>
+                </div>
+
+                <div class="form-floating">
+                  <textarea
+                    class="applicantMassage form-control"
+                    rows="6"
+                    name="message"
+                    id="applicantMassage"
+                    style="height: auto"
+                    placeholder="What makes you the best fit for this role?"
+                  ></textarea>
+                  <label for="applicantMassage"
+                    >What makes you the best fit for this role?</label
+                  >
+                </div>
+
+                <div
+                  class="position-relative rounded-2 inputDeviceImageWrappper mx-auto"
+                  style="width: fit-content"
+                >
+                  <label
+                    class="d-flex flex-column align-items-center gap-2 p-3"
+                  >
+                    <input
+                      type="file"
+                      class="applicantCV position-absolute opacity-0"
+                      style="width: 1px; padding: 0%"
+                      name="cv"
+                      id="applicantCV"
+                      required
+                      required
+                    />
+                    <i
+                      class="fa-duotone fa-solid fa-arrow-up-from-bracket"
+                      style="font-size: 1.5rem"
+                    ></i>
+                    <b>Drop your CV</b>
+                    <!-- <span></span> -->
+                  </label>
+                </div>
+                <input type="hidden" name="job" value="{{ job.id }}" />
+
+                <button type="submit" class="carousel-inner-btn py-2 rounded-2">
+                  Submit
+                </button>
+          </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+     
+      </section>
+
+      <!-- Terms And Conditions section end-->
+
+      <!-- Main Content End -->
+
+      <!-- Floating Social Media Start -->
+
+{% include "socialMedia.html" %}
+
+      <!-- Floating Social Media End -->
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

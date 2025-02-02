@@ -1,0 +1,82 @@
+{% extends 'base.html'%}
+{% block title %}Blogs{% endblock title %}
+{% load static %}
+{% block content %}
+    <main class="flex-shrink-0">
+      <!-- Main Content Start -->
+
+      <!-- Blog section start-->
+
+      <section class="container my-5" style="padding-block: 3rem">
+        <h1 class="section-title">Our Latest Blogs</h1>
+        <p class="text-center section-subtext mt-3">
+          Stay informed with the latest tips, trends, and insights on device
+          repair, maintenance, and accessories. Discover how to get the most out
+          of your devices!
+        </p>
+
+        <div class="blogsWrapper py-4">
+          {% for blog in blogs %}
+          <div class="card flex-md-row flex-lg-column rounded-3 gap-3 p-3"
+            style="border: 1px solid var(--accentColor)">
+            <div
+              class="rounded-3 blogCardImage card-img"
+              style="
+                background: url({{blog.image.url}});
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+              "
+            ></div>
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex gap-3">
+                <div class="d-flex gap-1 align-items-center">
+                  <i
+                    class="fa-duotone fa-solid fa-calendar-days"
+                    style="color: var(--primaryColor); font-size: 1rem"
+                  ></i>
+                  <span>{{blog.date}}</span>
+                </div>
+                <div class="d-flex gap-1 align-items-center">
+                  <i
+                    class="fa-duotone fa-solid fa-circle-user"
+                    style="color: var(--primaryColor); font-size: 1rem"
+                  ></i>
+                  <span>By {{blog.author}}</span>
+                </div>
+              </div>
+              <h5>{{blog.title}}</h5>
+              <p>
+                {{blog.description|slice:":200"|safe}}...
+              </p>
+              <a
+                href="{% url 'blog-detail' blog.id %}"
+                style="color: var(--primaryColor) !important"
+                class="commonBtn text-dark m-0"
+                >Read Blog <i class="fa-solid fa-chevron-right c-arrow"></i
+              ></a>
+            </div>
+          </div>
+          {% endfor %}
+
+     
+        </div>
+
+        {% comment %} <div class="text-center">
+          <a href="" class="commonBtn text-dark"
+            >More blogs <i class="fa-solid fa-chevron-right c-arrow"></i
+          ></a>
+        </div> {% endcomment %}
+      </section>
+
+      <!-- Blog section end-->
+
+      <!-- Main Content End -->
+
+      <!-- Floating Social Media Start -->
+
+      {% include "socialMedia.html" %}
+
+      <!-- Floating Social Media End -->
+    </main>
+{% endblock content %}

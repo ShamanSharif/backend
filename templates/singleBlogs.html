@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}{{blog.title}}{% endblock title %}
+{% load static %}
+{% block content %}
+
+    <main class="flex-shrink-0">
+      <!-- Main Content Start -->
+
+      <!-- Terms And Conditions section start-->
+
+      <section class="my-5" style="padding-block: 0.8rem">
+        <div
+          class=""
+          style="
+            aspect-ratio: 3/1;
+            background: url({{blog.image.url}});
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+          "
+        ></div>
+
+        <div class="extremeContainer container d-flex flex-column gap-2 mt-5">
+          <h1 class="section-title text-start mb-0">
+           {{blog.title}}
+          </h1>
+          <div class="d-flex gap-3 flex-wrap">
+            <span class="mb-0">
+              <b class="me-1" style="color: var(--primaryColor)">Date:</b>
+              {{blog.date}}
+            </span>
+            <span class="mb-0">
+              <b class="me-1" style="color: var(--primaryColor)">By:</b>
+              {{blog.author}}
+            </span>
+          </div>
+
+          <div class="mt-2">
+            <div>
+              {{blog.description|safe}}
+            </div>
+      
+          {% if blog.video_link %}
+            <iframe
+            class="my-4"
+            style="width: 100%; aspect-ratio: 3/1.7"
+            src="{{blog.video_link}}"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          ></iframe>
+          {% endif %}
+          {% if blog.description2 %}
+          <div>
+            {{blog.description2|safe}}
+          </div>
+          {% endif %}
+        </div>
+        </div>
+      </section>
+
+      <!-- Terms And Conditions section end-->
+
+      <!-- Main Content End -->
+
+      <!-- Floating Social Media Start -->
+
+      {% include "socialMedia.html" %}
+      <!-- Floating Social Media End -->
+    </main>
+{% endblock %}
+

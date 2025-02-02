@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Contact {% endblock title %}
+{% load static %}
+{% block content %}
+    <main class="flex-shrink-0">
+      <!-- Main Content Start -->
+
+      <!-- Terms And Conditions section start-->
+
+      <section
+        class="container d-flex flex-column gap-5"
+        style="padding-block: 6rem 3rem"
+      >
+      {% for s in store %}
+        <div class="d-flex flex-column gap-4 p-0" style="row-gap: 1.5rem">
+          <h1 class="text-start">
+            Contact Us In
+            <span style="color: var(--primaryColor)">{{s.area}}</span>
+          </h1>
+
+          <div class="">
+            <div
+              class="d-flex flex-wrap"
+              style="column-gap: 5rem; row-gap: 2rem"
+            >
+              <div class="d-flex flex-column gap-1">
+                <h6>Address</h6>
+                <a
+                  href="{{s.google_map_link}}"
+                  target="_blank"
+                  >{{s.address}}</a
+                >
+              </div>
+              <div class="d-flex flex-column gap-1">
+                <h6>Phone</h6>
+                <a href="tel:{{s.country_code}}{{s.phone_number}}">{{s.phone_number}}</a>
+              </div>
+              <div class="d-flex flex-column gap-1">
+                <h6>Email</h6>
+                <a href="mailto:{{s.email}}"
+                  >{{s.email}}</a
+                >
+              </div>
+            </div>
+          </div>
+          <div class="mt-4">
+            <iframe
+              class="rounded-3 map border"
+              src="{{s.google_map_iframe_link}}"
+              style="border: 0; width: 100%"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            >
+            </iframe>
+          </div>
+        </div>
+      {% endfor %}
+
+      
+      </section>
+
+      <!-- Terms And Conditions section end-->
+
+      <!-- Main Content End -->
+
+      <!-- Floating Social Media Start -->
+{% include "socialMedia.html" %}
+      <!-- Floating Social Media End -->
+    </main>
+{% endblock content %}

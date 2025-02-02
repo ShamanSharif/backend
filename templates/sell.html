@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+{% block title %}Sell{% endblock title %}
+{% load static %}
+{% block content %}
+
+    <main class="flex-shrink-0">
+      <!-- Main Content Start -->
+
+      <!-- Terms And Conditions section start-->
+
+      <section
+        class="extremeContainer container"
+        style="padding-block: 6rem 3rem"
+      >
+        <h1 class="section-title">Sell Your Old Devices</h1>
+        <p class="text-center section-subtext mt-2">
+          Got old gadgets? Trade them in for cash! We offer competitive prices
+          for phones, tablets, PCs, and more.
+        </p>
+
+        <form action="{% url 'device_submission_form' %}" method="POST" enctype="multipart/form-data" class="d-flex flex-column gap-5 mt-5">
+          {% csrf_token %}
+                  <h2>
+                    {% for message in messages%}
+                    {{message}}
+                    {% endfor %}
+                  </h2>
+       
+          <div class="d-flex flex-column gap-3">
+            <h1 class="section-title text-start m-0">
+              What kind of phone is it?
+            </h1>
+            <p class="section-subtext m-0 mb-3">
+              Select your device type, brand, and model, then upload some image
+              to help us identify and know more about your device.
+            </p>
+
+            <div class="form-floating">
+              <select name="type" id="type" class="type form-select" required>
+                <option value="" selected disabled hidden>
+                  Select device type
+                </option>
+                <!-- Placeholder option -->
+                {% for device in devices %}
+                <option value="{{device.id}}">{{device.name}}</option>
+                {% endfor %}
+              
+              </select>
+              <label for="type">Device type</label>
+            </div>
+            <div class="form-floating">
+              <select
+                name="brand"
+                id="brand"
+                class="brand form-select"
+                required
+              >
+                <option value="" selected disabled hidden>Select Brand</option>
+                <!-- Placeholder option -->
+                {% for b in brands %}
+                <option value="{{b.id}}">{{b.name}}</option>
+                {% endfor %}
+          
+              </select>
+              <label for="brand">Brand</label>
+            </div>
+            <div class="form-floating">
+              <select
+                name="model"
+                id="model"
+                class="model form-select"
+                required
+              >
+                <option value="" selected disabled hidden>Select Model</option>
+                <!-- Placeholder option -->
+                {% for m in models %}
+                <option value="{{m.id}}">{{m.name}}</option>
+                {% endfor %}
+        
+              </select>
+              <label for="model">Model</label>
+            </div>
+
+            <div class="form-floating">
+              <textarea
+                class="deviceDispriction form-control"
+                rows="8"
+                name="description"
+                id="deviceDispriction"
+                style="height: auto"
+                placeholder="Describe your device"
+                required
+              ></textarea>
+              <label for="deviceDispriction">Describe your device</label>
+            </div>
+
+            <div
+              class="position-relative rounded-2 inputDeviceImageWrappper mx-auto"
+              style="width: fit-content"
+            >
+              <label class="d-flex flex-column align-items-center gap-2 p-3">
+                <input
+                  type="file"
+                  class="deviceImages position-absolute opacity-0"
+                  multiple
+                  style="width: 1px; padding: 0%"
+                  name="image"
+                  id="deviceImages"
+                  placeholder="Describe your device"
+                  required
+                
+                />
+                <i
+                  class="fa-duotone fa-solid fa-arrow-up-from-bracket"
+                  style="font-size: 1.5rem"
+                ></i>
+                <h6 class="m-0">Upload your Device Images</h6>
+                <span>( 4 images )</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column gap-3">
+            <h1 class="section-title text-start m-0">
+              Enter your contact info
+            </h1>
+            <p class="section-subtext m-0 mb-3">
+              We'll reach out to provide an estimated price for your device."
+            </p>
+
+            <div class="d-flex flex-column flex-sm-row gap-3">
+              <div class="form-floating w-100">
+                <input
+                  type="text"
+                  class="customerFirstName form-control"
+                  id="customerFirstName"
+                  name="customerFirstName"
+                  placeholder="First Name"
+                  required
+                />
+                <label for="customerFirstName">First Name</label>
+              </div>
+              <div class="form-floating w-100">
+                <input
+                  type="text"
+                  class="customerLastName form-control"
+                  id="customerLastName"
+                  name="customerLastName"
+                  placeholder="Last Name"
+                  required
+                />
+                <label for="customerLastName">Last Name</label>
+              </div>
+            </div>
+
+            <div class="form-floating">
+              <input
+                type="email"
+                class="customerEmail form-control"
+                id="customerEmail"
+                name="customerEmail"
+                placeholder="Email"
+                required
+              />
+              <label for="customerEmail">Email address</label>
+            </div>
+
+            <div class="form-floating">
+              <input
+                type="number"
+                class="customerPhone form-control"
+                id="customerPhone"
+                name="customerPhone"
+                placeholder="Phone Numder"
+                required
+              />
+              <label for="customerPhone">Phone number to reach you</label>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-3">
+            <button
+              type="reset"
+              class="text-center py-2 px-4 rounded-2 resetBtn"
+              style="background-color: transparent"
+            >
+              Reset
+            </button>
+            <button
+              type="submit"
+              class="carousel-inner-btn py-2 rounded-2 submitButton"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Terms And Conditions section end-->
+
+      <!-- Main Content End -->
+
+      <!-- Floating Social Media Start -->
+      {% include "socialMedia.html" %}
+
+      <!-- Floating Social Media End -->
+    </main>
+{% endblock %}
